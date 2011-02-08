@@ -1,0 +1,14 @@
+<%args>
+$user => undef
+</%args>
+
+<html><body>
+<p>
+% if ( $user ) {
+Hi <% $user->username %>! You can return to your
+favorite CPAN interface and get voting.
+% }
+% else {
+You are not logged in.
+% }
+</p></body></html>
