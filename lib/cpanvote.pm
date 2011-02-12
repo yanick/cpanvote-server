@@ -52,9 +52,20 @@ __PACKAGE__->config->{'Plugin::Cache'}{backend} = {
     class   => "Cache::Memory",
 };
 
-
 # Start the application
 __PACKAGE__->setup();
+
+
+sub finalize_config { 
+    my $self = shift;   
+# twitter config
+my $twitter = $self->config->{twitter};
+my $t = $self->config->{authentication}{realms}{twitter};
+
+$t->{consumer_key} = $twitter->{key};
+$t->{consumer_secret} = $twitter->{secret};
+$t->{callback_url} = $twitter->{callback_url};
+}
 
 
 =head1 NAME
