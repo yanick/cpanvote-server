@@ -51,7 +51,7 @@ sub instead_info_GET {
             group_by => 'instead_id',
             select => [
                 'instead_id',
-                'count(instead_id)',
+                \'count(instead_id)',
             ],
             as => [
                 'instead_id',
