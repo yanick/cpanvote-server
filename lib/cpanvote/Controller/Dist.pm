@@ -112,29 +112,29 @@ sub votes_GET {
     my $votes = $c->stash->{dist}->votes;
 
     # TODO Group By instead of this...
-    my ( $yea, $nea, $meh ) = (0,0,0);
+    my ( $yea, $nay, $meh ) = (0,0,0);
     while ( my $v = $votes->next ) {
         if ( $v->vote == 1 ) {
             $yea++;
         }
         elsif ( $v->vote == -1 ) {
-            $nea++;
+            $nay++;
         }
         else { $meh++ }
     }
 
     my %data = (
         yea => $yea,
-        nea => $nea,
+        nay => $nay,
         meh => $meh,
-        total => $yea + $meh + $nea,
+        total => $yea + $meh + $nay,
     );
 
     if ( my $user_id = $c->session->{user_id} ) {
         my $v = $c->stash->{dist}->votes->find({ user_id => $user_id });
 
         $data{my_vote} = !$v            ? undef 
-                       : $v->vote == -1 ? 'nea' 
+                       : $v->vote == -1 ? 'nay' 
                        : $v->vote == 1  ? 'yea' 
                        :                  'meh'
                        ;
@@ -155,11 +155,12 @@ sub vote_PUT {
     my %vote_score = (
         yea => 1,
         nea => -1,
+        nay => -1,
         meh => 0,
     );
 
     return $self->status_bad_request( $c,
-        message => "vote must be 'yea', 'nea' or 'meh'" ) 
+        message => "vote must be 'yea', 'nay' or 'meh'" ) 
         unless exists $vote_score{$vote};
 
     my $user = $c->model('cpanvoteDB::Users')->find({id =>
@@ -187,7 +188,7 @@ sub summary_GET {
 
     my $dist = $c->stash->{dist};
 
-    my @points;    # 0 = neah, 1 = meh, 2 = yeah
+    my @points;    # 0 = nay, 1 = meh, 2 = yeah
     my @insteads;
     my @comments;
 
@@ -198,9 +199,9 @@ sub summary_GET {
     }
 
     my %data;
-    $data{vote}{neah} = $points[0];
+    $data{vote}{nay} = $points[0];
     $data{vote}{meh}  = $points[1];
-    $data{vote}{yeah} = $points[2];
+    $data{vote}{yea} = $points[2];
     $data{instead} =
       [ map { $_->distname }
           $c->model('cpanvoteDB::Distributions')
