@@ -5,7 +5,7 @@
 // @require        http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js
 // ==/UserScript==
 
-var cpanvote_url = "http://www.metacpan.org:3000";
+var cpanvote_url = "http://enkidu:3000";
 var first_vote_grab = true;
 var dist;
 
@@ -24,13 +24,36 @@ if ( $('td:contains("This Release")').length > 0 ) {
 
         rating_div.after( 
             "<tr><td class='label'>CPAN Votes</td>"
-        + "<td class='cell' colspan='3'><div id='cpanvotes'>"
-        + "<span class='votes'></span> "
+        + "<td class='cell' colspan='3'><div style='display: inline-block' id='cpanvotes'>"
+        + "<div class='votes'>"
+        + "<div class='vote_tally' id='cpanvotes_yea'></div>"
+        + "<div class='vote_tally' id='cpanvotes_meh'></div>"
+        + "<div class='vote_tally' id='cpanvotes_nay'></div>"
+        + "</div> "
         + "<div class='recommends'></div>"
         + "</div>" 
         + "<div id='voting_station'></div>"
         + "</td></tr>"
         );
+
+        $('.vote_tally').css({
+            width: "40px",
+            'padding-right': '20px',
+            'text-align': 'right',
+            'background-position': 'right center',
+            'background-repeat': 'no-repeat',
+            'display': 'inline-block'
+        });
+
+        $('#cpanvotes_yea').css({
+            'background-image':  "url("+cpanvote_url + "/static/images/yea.png)"
+        });
+        $('#cpanvotes_nay').css({
+            'background-image':  "url("+cpanvote_url + "/static/images/nay.png)"
+        });
+        $('#cpanvotes_meh').css({
+            'background-image':  "url("+cpanvote_url + "/static/images/meh.png)"
+        });
 
         get_votes();
         get_instead();
@@ -43,8 +66,9 @@ function get_votes () {
     $.getJSON(
         cpanvote_url + '/dist/' + dist + '/votes', 
         function(data) {
-            var results = '+' + data["yea"] + ", 0 x " + data["meh"] + ", -" + data["nea"];
-            $('#cpanvotes .votes').html( results );
+            $('#cpanvotes_yea').html( data["yea"] );
+            $('#cpanvotes_nay').html( data["nay"] );
+            $('#cpanvotes_meh').html( data["meh"] );
 
             if ( first_vote_grab ) {
                 prepare_voting(dist,data);
@@ -91,32 +115,48 @@ function prepare_voting (dist,data) {
     }
     else {
         var form_url = cpanvote_url + '/dist/' + dist + '/vote';
+
         $( '#voting_station' ).html(
-            "<form action='" + form_url + "'>"
-            + '<input type="radio" name="vote" value="yea"> yea'
-            + '<input type="radio" name="vote" value="meh"> meh'
-            + '<input type="radio" name="vote" value="nea"> nea'
-            + '</form>'
-        );
-
-        if ( data["my_vote"] != undefined ) {
-            $('#voting_station').find(
-                ':radio[value=' + data["my_vote"] +']' 
-            ).attr( 'checked', true );
-        }
-
-        $('#voting_station').find(':radio').click(function(){
+             "your vote: <img src='" + cpanvote_url + "/static/images/yea_off.png' alt='yea' />"
+           + "<img src='" + cpanvote_url + "/static/images/meh_off.png' alt='meh' />"
+           + "<img src='" + cpanvote_url + "/static/images/nay_off.png' alt='nay' />"
+        ).css({ height: '24px',
+            "display": "inline-block",
+            "margin-left": "20px"
+            })
+            .find('img').css({ padding: "4px", 
+            "background-position": "center", "background-repeat": "no-repeat"})
+        .hover( 
+            function(){ $(this).css('background-image', "url(" +cpanvote_url + "/static/images/selected_vote.png)")  }, 
+            function(){  $(this).css('background-image','')} )
+        .click( function() {
+            var $x = $(this);
             $.ajax({
-                url: form_url + '/' + $('#voting_station').find(':radio:checked').val(),
+                url: form_url + '/' + $x.attr('alt'),
                 type: 'PUT',
                 dataType: 'json',
-                success: function() { get_votes(); }
+                success: function() { 
+                    $('#voting_station img').each(function(){
+                        $(this).attr( 'src', 
+                            $(this).attr('src').replace(/(_off)?\.png/, '_off.png') 
+                            );
+                    });
+                    $x.attr( 'src', $x.attr('src').replace(/_off/, '' ) );
+
+                    get_votes(); 
+                }
             });
-        });
+                });
+
+
+        if ( data["my_vote"] != undefined ) {
+            var $img = $('#voting_station img[alt="' + data["my_vote"] + '"]');
+            $img.attr( 'src', $img.attr('src').replace( /_off/, '' ) );
+        }
 
         var instead_form_url = cpanvote_url + '/dist/' + dist + '/instead/use';
         $('#voting_station').append(
-                '<form id="instead_form" action="' + instead_form_url +'">'
+                '<form style="display: inline-block" id="instead_form" action="' + instead_form_url +'">'
                 + 'instead, use <input id="instead" name="instead" />'
                 + '<input type="button" value="submit" id="instead_submit" />'
                 + '</form>'
