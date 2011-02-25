@@ -1,4 +1,7 @@
 Changes
+contrib/cpan_vote.user.js
+cpanvote-0.01.tar.gz
+cpanvote-0.2.0.tar.gz
 cpanvote.conf
 db.sqlite
 inc/Module/AutoInstall.pm
@@ -20,6 +23,7 @@ lib/cpanvote/Controller/Auth.pm
 lib/cpanvote/Controller/Dist.pm
 lib/cpanvote/Controller/Register.pm
 lib/cpanvote/Controller/Root.pm
+lib/cpanvote/Controller/Votes.pm
 lib/cpanvote/Model/cpanvoteDB.pm
 lib/cpanvote/View/Mason.pm
 Makefile.PL
@@ -38,6 +42,15 @@ root/static/images/btn_88x31_built_shadow.png
 root/static/images/btn_88x31_powered.png
 root/static/images/btn_88x31_powered_shadow.png
 root/static/images/catalyst_logo.png
+root/static/images/meh.png
+root/static/images/meh_off.png
+root/static/images/nay.png
+root/static/images/nay_off.png
+root/static/images/nea.png
+root/static/images/selected_vote.png
+root/static/images/vote_selected.png
+root/static/images/yea.png
+root/static/images/yea_off.png
 script/cpanvote_cgi.pl
 script/cpanvote_create.pl
 script/cpanvote_fastcgi.pl
@@ -50,9 +63,11 @@ t/02pod.t
 t/03podcoverage.t
 t/controller_Auth.t
 t/controller_Dist.t
+t/controller_Votes.t
 t/dist.t
 t/lib/cpanvote/Test/DB.pm
 t/lib/cpanvote/Test/Mech.pm
 t/model_cpanvoteDB.t
 t/session.t
 t/view_Mason.t
+yanick@www.metacpan.org
