@@ -5,7 +5,7 @@
 // @require        http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js
 // ==/UserScript==
 
-var cpanvote_url = "http://www.metacpan.org:3000";
+var cpanvote_url = "http://cpanvote.metacpan.org";
 var first_vote_grab = true;
 var dist;
 
