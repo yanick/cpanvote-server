@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name           CPAN Vote
 // @namespace      http://babyl.ca/cpanvote
-// @include        http://search.cpan.org/dist/*
+// @include        http://search.cpan.org/*
 // @require        http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js
 // ==/UserScript==
 
@@ -85,6 +85,7 @@ function get_instead () {
             var dists = "dists" in data ? data["dists"] : new Array();
 
             var text = "";
+            var dist_url = 'http://search.cpan.org/dist/';
 
             if ( dists.length > 0 ) {
                 text = "peeps recommend instead : ";
@@ -93,7 +94,8 @@ function get_instead () {
                     if ( i > 0 ) {
                         text += ', ';
                     }
-                    text += dists[i].distname;
+                    text += "<a href='" + dist_url + '/' + dists[i].distname 
+                            + "'>" + dists[i].distname + "</a>";
                 }
             }
 
@@ -156,13 +158,14 @@ function prepare_voting (dist,data) {
 
         var instead_form_url = cpanvote_url + '/dist/' + dist + '/instead/use';
         $('#voting_station').append(
-                '<form style="display: inline-block" id="instead_form" action="' + instead_form_url +'">'
+                '<form style="display: inline-block" id="instead_form" action="' 
+                + instead_form_url + '">'
                 + 'instead, use <input id="instead" name="instead" />'
-                + '<input type="button" value="submit" id="instead_submit" />'
+                + '<input type="submit" value="submit" id="instead_submit" />'
                 + '</form>'
         );
 
-        $('#instead_submit').click(function(){ submit_instead() } );
+        $('#instead_form').submit(function(){ submit_instead(); return false; } );
     }
 } 
 
