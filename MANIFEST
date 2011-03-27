@@ -1,5 +1,4 @@
 Changes
-contrib/cpan_vote.user.js
 cpanvote-0.01.tar.gz
 cpanvote-0.2.0.tar.gz
 cpanvote.conf
@@ -70,4 +69,5 @@ t/lib/cpanvote/Test/Mech.pm
 t/model_cpanvoteDB.t
 t/session.t
 t/view_Mason.t
-yanick@www.metacpan.org
+root/static/cpan_vote.user.js
+script/cpanvote_init.sh
